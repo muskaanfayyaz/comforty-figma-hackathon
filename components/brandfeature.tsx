@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const features = [
   {
-    image: "/delivery.png", // Replace with the actual path to your image
+    image: "/Delivery.png", // Replace with the actual path to your image
     title: "Next day as standard",
     description: "Order before 3pm and get your order the next day as standard.",
   },
@@ -17,7 +17,7 @@ const features = [
     description: "For our materials and quality, you won’t find better prices anywhere.",
   },
   {
-    image: "/sprout.png", // Replace with the actual path to your image
+    image: "/Sprout.png", // Replace with the actual path to your image
     title: "Recycled packaging",
     description: "We use 100% recycled to ensure our footprint is more manageable.",
   },
