@@ -14,7 +14,7 @@ export default function AboutUs() {
       </div>
       <div className="rounded-lg overflow-hidden">
         <Image
-          src="/images/chair.png" // Replace with actual image path
+          src="/Image (3).png" // Replace with actual image path
           alt="Chair"
           width={500}
           height={500}

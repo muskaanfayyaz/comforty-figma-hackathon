@@ -2,17 +2,17 @@ import Image from 'next/image';
 
 const products = [
   {
-    image: "/images/poplar-sofa.png", // Replace with actual image path
+    image: "/Large.png", // Replace with actual image path
     name: "The Poplar suede sofa",
     price: "$99.00",
   },
   {
-    image: "/images/black-chair.png", // Replace with actual image path
+    image: "/black-chair.png", // Replace with actual image path
     name: "The Dandy chair",
     price: "$99.00",
   },
   {
-    image: "/images/trend-chair.png", // Replace with actual image path
+    image: "/trend-chair.png", // Replace with actual image path
     name: "The Dandy chair",
     price: "$99.00",
   },

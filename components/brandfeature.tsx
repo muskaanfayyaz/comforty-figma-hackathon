@@ -2,22 +2,22 @@ import Image from 'next/image';
 
 const features = [
   {
-    image: "/images/delivery.png", // Replace with the actual path to your image
+    image: "/delivery.png", // Replace with the actual path to your image
     title: "Next day as standard",
     description: "Order before 3pm and get your order the next day as standard.",
   },
   {
-    image: "/images/artisan.png", // Replace with the actual path to your image
+    image: "/Checkmark--outline.png", // Replace with the actual path to your image
     title: "Made by true artisans",
     description: "Handmade crafted goods made with real passion and craftsmanship.",
   },
   {
-    image: "/images/price.png", // Replace with the actual path to your image
+    image: "/Purchase.png", // Replace with the actual path to your image
     title: "Unbeatable prices",
     description: "For our materials and quality, you won’t find better prices anywhere.",
   },
   {
-    image: "/images/recycled.png", // Replace with the actual path to your image
+    image: "/sprout.png", // Replace with the actual path to your image
     title: "Recycled packaging",
     description: "We use 100% recycled to ensure our footprint is more manageable.",
   },
