@@ -25,25 +25,39 @@ const features = [
 
 export default function BrandFeatures() {
   return (
-    <section className="text-center w-full">
-      <h2 className="text-xl lg:text-2xl font-bold mb-8">What Makes Our Brand Different</h2>
+    <section className="text-center w-full px-4 py-12">
+      {/* Heading */}
+      <h2 className="text-2xl lg:text-3xl text-gray-800 mb-10">
+        What Makes Our Brand Different
+      </h2>
+
+      {/* Features Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {features.map((feature, index) => (
           <div
             key={index}
-            className="p-6 bg-white shadow-md rounded-lg flex flex-col items-center"
+            className="p-6 bg-gray-50 rounded-lg shadow-sm flex flex-col items-start"
           >
+            {/* Icon */}
             <div className="mb-4">
               <Image
                 src={feature.image}
                 alt={feature.title}
-                width={64}
-                height={64}
-                className="rounded-full"
+                width={24} // Icon width
+                height={24} // Icon height
+                className="object-contain"
               />
             </div>
-            <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-            <p className="text-sm text-gray-600">{feature.description}</p>
+
+            {/* Title */}
+            <h3 className="text-lg text-[#007580] mb-2">
+              {feature.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-sm text-[#007580] leading-relaxed text-left">
+              {feature.description}
+            </p>
           </div>
         ))}
       </div>
