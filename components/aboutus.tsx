@@ -2,13 +2,13 @@ import Image from 'next/image';
 
 export default function AboutUs() {
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center w-full">
+    <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center w-full px-4 py-8">
       {/* Text Section */}
       <div className="bg-[#007580] text-white p-8 rounded-lg flex flex-col h-full relative">
-        <h2 className="text-2xl lg:text-3xl font-bold leading-none">
+        <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold leading-none">
           About Us - Comforty
         </h2>
-        <p className="text-sm lg:text-base mt-2">
+        <p className="text-sm lg:text-base mt-2 xl:text-lg">
           At Comforty, we believe that the right chair can transform your space and elevate your comfort. Specializing in ergonomic design, premium materials, and modern aesthetics, we craft chairs that seamlessly blend style with functionality.
         </p>
         <button
