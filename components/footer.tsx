@@ -12,7 +12,7 @@ const Footer = () => {
           <div className="flex items-center mb-4">
             {/* Replace with your logo image */}
             <Image
-              src="/logo.png"
+              src="/Logo.png"
               alt="Comforty Logo"
               width={32}
               height={32}
