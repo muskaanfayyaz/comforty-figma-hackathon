@@ -14,30 +14,30 @@ interface Product {
   image_url: string;
 }
 
-// Fetch Products from Sanity
-export const getProducts = async (): Promise<Product[]> => {
-  const query = `*[_type == "products"]{
-    _id,
-    name,
-    price,
-    oldPrice,
-    isNew,
-    isOnSale,
-    "image_url": image.asset->url
-  }`;
-
-  return await client.fetch<Product[]>(query);
-};
-
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const fetchedProducts = await getProducts();
-      setProducts(fetchedProducts);
-      setIsLoading(false); // Stop loading once the data is fetched
+      const query = `*[_type == "products"]{
+        _id,
+        name,
+        price,
+        oldPrice,
+        isNew,
+        isOnSale,
+        "image_url": image.asset->url
+      }`;
+
+      try {
+        const fetchedProducts = await client.fetch<Product[]>(query);
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false); // Stop loading once the data is fetched
+      }
     };
 
     fetchProducts();
