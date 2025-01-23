@@ -1,9 +1,9 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { client } from "@/sanity/lib/client";
-import ProductCard from "../../../../components/productcard"; // Import ProductCard component
+import ProductCard from "../../../../components/productcard";
 
 interface Product {
   _id: string;
@@ -14,20 +14,6 @@ interface Product {
   isOnSale?: boolean;
   image_url: string;
 }
-
-export const getProducts = async (category: string): Promise<Product[]> => {
-  const query = `*[_type == "products" && category->title == $category]{
-    _id,
-    name,
-    price,
-    oldPrice,
-    isNew,
-    isOnSale,
-    "image_url": image.asset->url
-  }`;
-
-  return await client.fetch<Product[]>(query, { category });
-};
 
 export default function CategoryPage() {
   const { category } = useParams();
@@ -41,17 +27,31 @@ export default function CategoryPage() {
     const fetchProducts = async () => {
       if (!decodedCategory) return;
 
-      const fetchedProducts = await getProducts(decodedCategory);
-      setProducts(fetchedProducts);
-      setIsLoading(false);
+      const query = `*[_type == "products" && category->title == $category]{
+        _id,
+        name,
+        price,
+        oldPrice,
+        isNew,
+        isOnSale,
+        "image_url": image.asset->url
+      }`;
+
+      try {
+        const fetchedProducts = await client.fetch<Product[]>(query, { category: decodedCategory });
+        setProducts(fetchedProducts);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setIsLoading(false);
+      }
     };
 
     fetchProducts();
   }, [decodedCategory]);
 
-  // Function to handle click and navigate to product details page
   const handleProductClick = (productId: string) => {
-    router.push(`/products/${productId}`); // Navigate to the product detail page
+    router.push(`/products/${productId}`);
   };
 
   return (
@@ -68,7 +68,7 @@ export default function CategoryPage() {
             <div
               key={product._id}
               className="cursor-pointer"
-              onClick={() => handleProductClick(product._id)} // Add the click handler
+              onClick={() => handleProductClick(product._id)}
             >
               <ProductCard
                 id={product._id}
