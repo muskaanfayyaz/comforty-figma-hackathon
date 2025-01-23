@@ -12,10 +12,19 @@ interface ProductCardProps {
   oldPrice?: string;
   isNew?: boolean;
   isOnSale?: boolean;
+  alt: string; // Add alt prop here
 }
 
-
-const ProductCard: React.FC<ProductCardProps> = ({ id, image, title, price, oldPrice, isNew, isOnSale }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  id,
+  image,
+  title,
+  price,
+  oldPrice,
+  isNew,
+  isOnSale,
+  alt, // Destructure alt here
+}) => {
   return (
     <div className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition">
       {/* Label for New or Sale */}
@@ -33,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, image, title, price, oldP
       <Link href={`/products/${id}`}>
         <Image
           src={image}
-          alt={title}
+          alt={alt} // Use the alt prop here
           width={300}
           height={300}
           className="object-cover w-full h-[250px] sm:h-[300px] transition-transform group-hover:scale-105"

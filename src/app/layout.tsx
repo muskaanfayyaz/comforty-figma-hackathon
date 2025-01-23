@@ -3,12 +3,15 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "../../components/header"; // Import Header component
 import Footer from "../../components/footer"; // Import Footer component
+import { CartProvider } from "../context/CartContext";
+import { WishlistProvider } from "../context/WishlistContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
@@ -28,9 +31,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Header /> {/* Add Header here to display on every page */}
-        {children} {/* Content of each page */}
-        <Footer /> {/* Add Footer here to display on every page */}
+            <CartProvider>
+            <WishlistProvider>
+            <Header /> {/* Header appears on all pages */}
+            {children} {/* Page content */}
+            <Footer /> {/* Footer appears on all pages */}
+            </WishlistProvider>
+            </CartProvider>
       </body>
     </html>
   );

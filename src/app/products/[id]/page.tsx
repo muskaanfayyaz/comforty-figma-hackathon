@@ -1,132 +1,172 @@
 "use client";
 
-import React from "react";
-import { notFound } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { client } from "@/sanity/lib/client";
 import Image from "next/image";
-import Link from "next/link";
-import { productsData } from "../../../../data/product"; // Import productsData
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
-const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
-  // Unwrap the params Promise
-  const { id } = React.use(params);
+interface Product {
+  _id: string;
+  title: string;
+  price: number;
+  oldPrice?: number;
+  image_url: string;
+  description: string;
+  badge: string;
+  tags: string[];
+  inventory: number;
+}
 
-  // Find the product by ID
-  const product = productsData.find((product) => product.id === id);
+const ProductDetailPage = () => {
+  const { id } = useParams(); // Get the product ID from the URL
+  const [product, setProduct] = useState<Product | null>(null);
+  const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Show a 404 page if the product is not found
-  if (!product) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id) return;
 
-  // Select featured products (for example, first 5 products)
-  const featuredProducts = productsData.slice(0, 5); // Adjust the number based on your needs
+      try {
+        const query = `*[_type == "products" && _id == "${id}"][0]{
+          _id,
+          title,
+          price,
+          oldPrice,
+          "image_url": image.asset->url,
+          description,
+          badge,
+          tags,
+          inventory
+        }`;
+
+        const fetchedProduct = await client.fetch<Product>(query);
+
+        if (fetchedProduct) {
+          setProduct(fetchedProduct);
+        } else {
+          console.error("Product not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        _id: product._id,
+        title: product.title,
+        price: product.price,
+        image: product.image_url,
+        quantity: 1,
+      });
+
+      setSuccessMessage("Product successfully added to cart!");
+      setTimeout(() => setSuccessMessage(null), 3000); // Hide message after 3 seconds
+    }
+  };
+
+  const handleAddToWishlist = () => {
+    if (product) {
+      addToWishlist({
+        _id: product._id,
+        title: product.title,
+        price: product.price,
+        image: product.image_url,
+      });
+
+      setSuccessMessage("Product successfully added to wishlist!");
+      setTimeout(() => setSuccessMessage(null), 3000); // Hide message after 3 seconds
+    }
+  };
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 py-8">
-      {/* Main Product Section */}
-      <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
-        {/* Product Image */}
-        <div className="w-full lg:w-1/2 rounded-lg overflow-hidden shadow-lg">
-          <Image
-            src={product.image}
-            alt={product.title}
-            width={500}
-            height={500}
-            className="object-cover rounded-lg"
-          />
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      {product ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Product Image */}
+          <div className="relative">
+            <Image
+              src={product.image_url || "/placeholder.png"}
+              alt={product.title}
+              width={500}
+              height={500}
+              className="w-full h-auto object-cover rounded-lg"
+            />
+          </div>
 
-        {/* Product Details */}
-        <div className="lg:w-1/2 space-y-6">
-          <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-          {/* Styled Price */}
-          <p className="text-2xl font-bold text-teal-600">{product.price} USD</p>
-          {/* Horizontal Line */}
-          <hr className="border-gray-300 my-4" />
-          <p className="text-gray-600 leading-relaxed">
-            {product.description ||
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tincidunt erat enim. Lorem ipsum dolor sit amet, consectetur adipiscing."}
-          </p>
-          <button className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-6 rounded-md transition">
-            <Image src="/cart.png" alt="Cart Icon" width={20} height={20} />
-            Add To Cart
-          </button>
-        </div>
-      </div>
+          {/* Product Details */}
+          <div className="flex flex-col">
+            <h1 className="text-3xl font-bold">{product.title}</h1>
+            <p className="text-xl text-gray-700 mt-2">${product.price.toFixed(2)}</p>
+            {product.oldPrice && (
+              <p className="text-gray-500 line-through">${product.oldPrice.toFixed(2)}</p>
+            )}
+            <p className="mt-4 text-gray-600">{product.description}</p>
 
-      {/* Featured Products Section */}
-      <div className="mt-16">
-        {/* Section Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">FEATURED PRODUCTS</h2>
-          <Link
-            href="/products"
-            className="text-teal-500 font-medium hover:underline"
-          >
-            View all
-          </Link>
-        </div>
+            {/* Badges */}
+            {product.badge && (
+              <span className="inline-block mt-2 text-sm bg-yellow-500 text-white px-3 py-1 rounded-full">
+                {product.badge}
+              </span>
+            )}
 
-        {/* Product Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {featuredProducts.map((item) => (
-            <Link key={item.id} href={`/products/${item.id}`} passHref>
-              <div className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition">
-                {/* Label for New or Sale */}
-                {(item.isNew || item.isOnSale) && (
-                  <div
-                    className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded-md font-medium ${
-                      item.isNew ? "bg-[#1DBF73]" : "bg-[#F97316]"
-                    }`}
+            {/* Tags */}
+            <div className="mt-4">
+              <p className="font-semibold">Tags:</p>
+              <div className="flex flex-wrap space-x-2">
+                {product.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full"
                   >
-                    {item.isNew ? "New" : "Sale"}
-                  </div>
-                )}
-
-                {/* Image Section */}
-                <div className="relative w-full h-[250px] sm:h-[300px]">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                </div>
-
-                {/* Product Info Section */}
-                <div className="flex justify-between items-center px-4 py-3 bg-white">
-                  <div>
-                    <p className="text-sm text-gray-700 group-hover:text-[#029FAE] transition cursor-pointer">
-                      {item.title}
-                    </p>
-                    <p className="text-lg font-bold mt-1 group-hover:text-[#029FAE] transition cursor-pointer">
-                      {item.price}
-                      {item.oldPrice && (
-                        <span className="line-through text-gray-400 ml-2 text-sm">
-                          {item.oldPrice}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <Link href="/cart">
-                    <div className="hover:bg-[#029FAE] bg-gray-200 p-2 rounded-full transition">
-                      <Image
-                        src="/cart.png"
-                        alt="Cart Icon"
-                        width={20}
-                        height={20}
-                        className="text-white"
-                      />
-                    </div>
-                  </Link>
-                </div>
+                    {tag}
+                  </span>
+                ))}
               </div>
-            </Link>
-          ))}
+            </div>
+
+            {/* Inventory */}
+            <p className="mt-4 text-gray-800">
+              <strong>Inventory:</strong> {product.inventory} items available
+            </p>
+
+            {/* Buttons */}
+            <div className="mt-6 flex space-x-4">
+              <button
+                onClick={handleAddToCart}
+                className="bg-teal-500 text-white px-6 py-2 rounded-md hover:bg-teal-600"
+              >
+                Add to Cart
+              </button>
+              <button
+                onClick={handleAddToWishlist}
+                className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600"
+              >
+                Add to Wishlist
+              </button>
+            </div>
+
+            {/* Success Message */}
+            {successMessage && (
+              <div className="mt-4 text-center text-white bg-green-500 p-2 rounded-md">
+                {successMessage}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <p className="text-center text-gray-500">Loading product details...</p>
+      )}
     </div>
   );
 };
 
-export default ProductPage;
+export default ProductDetailPage;
