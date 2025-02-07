@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { client } from "@/sanity/lib/client";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 interface Product {
   _id: string;
@@ -41,8 +42,10 @@ const Header = () => {
 
     updateCartCount();
 
-    const handleStorageChange = () => {
-      updateCartCount();
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "cart") {
+        updateCartCount();
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -73,6 +76,16 @@ const Header = () => {
           <Link href="/contactus" className="hover:underline">
             Need Help
           </Link>
+
+          {/* Show Sign-In Button if Signed Out */}
+          <SignedOut>
+            <SignInButton mode="modal" />
+          </SignedOut>
+
+          {/* Show User Profile if Signed In */}
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  name: string; 
 }
 
 interface CartContextType {
@@ -24,8 +25,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Load cart from localStorage on mount
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window !== "undefined") {
-      const savedCart = localStorage.getItem("cart");
-      return savedCart ? JSON.parse(savedCart) : [];
+      try {
+        const savedCart = localStorage.getItem("cart");
+        return savedCart ? JSON.parse(savedCart) : [];
+      } catch (error) {
+        console.error("Error loading cart from localStorage:", error);
+        return [];
+      }
     }
     return [];
   });
@@ -35,9 +41,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Update cartCount and store cart in localStorage whenever cart changes
   useEffect(() => {
     const totalCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-    setCartCount(totalCount);
+    
+    // ✅ Update state only if count has actually changed (prevents unnecessary re-renders)
+    if (cartCount !== totalCount) {
+      setCartCount(totalCount);
+    }
+
     localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+  }, [cart, cartCount]); // ✅ Include cartCount in dependencies to ensure correct updates
 
   // Add product to cart
   const addToCart = (product: CartItem) => {
@@ -68,10 +79,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // Clear cart
+  // Clear cart without causing extra re-renders
   const clearCart = () => {
-    setCart([]);
-    setCartCount(0);
+    setCart([]); 
+    setCartCount(0); 
     localStorage.removeItem("cart");
   };
 

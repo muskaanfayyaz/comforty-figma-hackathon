@@ -5,64 +5,41 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import Image from "next/image";
 import Link from "next/link";
-import { CartItem } from "@/context/CartContext";
+import CheckoutButton from "../../../components/CheckoutButton";
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const { addToWishlist } = useWishlist();
 
-  const [wishlistMessage, setWishlistMessage] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Ensures rendering happens only on the client
+    setIsClient(true);
   }, []);
 
-  // Function to handle adding item to wishlist
-  const handleAddToWishlist = (item: CartItem) => {
-    addToWishlist(item); // Add to wishlist
-    setWishlistMessage(`Added ${item.title} to wishlist!`); // Success message
-    setTimeout(() => setWishlistMessage(null), 3000); // Hide message after 3 seconds
-  };
-
-  if (!isClient) return null; // Avoids rendering during SSR
+  if (!isClient) return null; // Avoids SSR hydration errors
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 overflow-hidden">
+    <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
       {/* Left - Cart Items */}
       <div className="flex-1">
         <h1 className="text-3xl font-bold mb-6">Bag</h1>
 
-        {/* Wishlist success message */}
-        {wishlistMessage && (
-          <div className="bg-green-100 text-green-800 p-2 mb-4 rounded">
-            {wishlistMessage}
-          </div>
-        )}
-
-        {/* Skeleton Loader for Cart */}
         {cart.length === 0 ? (
-          <div className="space-y-4">
-            <div className="h-40 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
-          </div>
+          <p className="text-gray-500">
+            Your cart is empty.{" "}
+            <Link href="/" className="text-blue-600">
+              Continue Shopping
+            </Link>
+          </p>
         ) : (
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             {cart.map((item) => (
               <div key={item._id} className="flex flex-col md:flex-row items-center border-b pb-4 mb-4">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={80}
-                  height={80}
-                  className="rounded"
-                />
+                <Image src={item.image} alt={item.title} width={80} height={80} className="rounded" />
                 
-                {/* Product Details */}
                 <div className="ml-4 flex-1 text-center md:text-left">
                   <h2 className="text-lg font-semibold">{item.title}</h2>
-                  <p className="text-gray-500">Ashen Slate/Cobalt Bliss</p>
                   <p className="text-gray-500">Size: L</p>
                   
                   {/* Quantity Controls */}
@@ -90,7 +67,7 @@ const CartPage = () => {
                 <div className="ml-4 flex gap-3">
                   <button
                     className="text-gray-500 hover:text-red-500"
-                    onClick={() => handleAddToWishlist(item)}
+                    onClick={() => addToWishlist(item)}
                   >
                     ❤️
                   </button>
@@ -124,11 +101,11 @@ const CartPage = () => {
             <p>Total</p>
             <p>${cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</p>
           </div>
-          <Link href="/checkout">
-            <button className="mt-6 bg-teal-700 text-white px-6 py-3 rounded-md w-full">
-              Member Checkout
-            </button>
-          </Link>
+
+          {/* Checkout Button */}
+          <div className="mt-6">
+            <CheckoutButton />
+          </div>
         </div>
       )}
     </div>
