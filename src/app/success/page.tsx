@@ -20,20 +20,27 @@ const SuccessContent = () => {
   const sessionId = searchParams.get("session_id");
   const hasClearedCart = useRef(false);
   const [showConfetti, setShowConfetti] = useState(true);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
+    // Ensure the code runs only on the client
+    if (typeof window !== "undefined") {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    }
+
     if (sessionId && !hasClearedCart.current) {
       clearCart();
       hasClearedCart.current = true;
     }
 
     // Stop confetti after 5 seconds
-    setTimeout(() => setShowConfetti(false), 5000);
+    const timer = setTimeout(() => setShowConfetti(false), 5000);
+    return () => clearTimeout(timer);
   }, [sessionId, clearCart]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-100 to-blue-200">
-      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+      {showConfetti && <Confetti width={dimensions.width} height={dimensions.height} />}
       
       <div className="bg-white p-8 md:p-10 rounded-2xl shadow-xl text-center max-w-lg w-full transform transition-all scale-100 hover:scale-105">
         <h1 className="text-3xl font-bold text-green-600 mb-4 animate-fadeIn">
