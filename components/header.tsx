@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { client } from "@/sanity/lib/client";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { getCartItems } from "../utils/cartUtils";
 
 interface Product {
   _id: string;
@@ -18,7 +19,7 @@ const Header = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -31,21 +32,10 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const totalItems = cart.reduce(
-        (acc: number, item: { quantity: number }) => acc + item.quantity,
-        0
-      );
-      setCartCount(totalItems);
-    };
+    setCartCount(getCartItems().reduce((total, item) => total + (item.quantity || 1), 0));
 
-    updateCartCount();
-
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === "cart") {
-        updateCartCount();
-      }
+    const handleStorageChange = () => {
+      setCartCount(getCartItems().reduce((total, item) => total + (item.quantity || 1), 0));
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -137,7 +127,9 @@ const Header = () => {
             <div className="cursor-pointer bg-white border px-3 py-2 rounded-md flex items-center gap-2 shadow-sm hover:border-[#007580] transition">
               <Image src="/cart.png" alt="Cart Icon" width={20} height={20} />
               <span className="hidden sm:block text-black">Cart</span>
+              {cartCount > 0 && (
               <span className="bg-[#007580] text-white text-xs px-2 py-1 rounded-full">{cartCount}</span>
+            )}
             </div>
           </Link>
 

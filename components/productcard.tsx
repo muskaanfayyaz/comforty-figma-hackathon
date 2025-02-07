@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { addToCart } from "../utils/cartUtils"; // ✅ Import addToCart function
 
 interface ProductCardProps {
   id: string;
@@ -12,7 +13,7 @@ interface ProductCardProps {
   oldPrice?: string;
   isNew?: boolean;
   isOnSale?: boolean;
-  alt: string; // Add alt prop here
+  alt: string; // Alt prop
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -23,8 +24,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
   oldPrice,
   isNew,
   isOnSale,
-  alt, // Destructure alt here
+  alt,
 }) => {
+  const handleAddToCart = () => {
+    addToCart({ 
+      _id: id, 
+      image, 
+      title, 
+      price: parseFloat(price), 
+      quantity: 1 
+    }); // ✅ Add product to cart
+  };
+
   return (
     <div className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition">
       {/* Label for New or Sale */}
@@ -42,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <Link href={`/products/${id}`}>
         <Image
           src={image}
-          alt={alt} // Use the alt prop here
+          alt={alt}
           width={300}
           height={300}
           className="object-cover w-full h-[250px] sm:h-[300px] transition-transform group-hover:scale-105"
@@ -64,17 +75,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </p>
         </div>
-        <Link href="/cart">
-          <div className="hover:bg-[#029FAE] bg-gray-200 p-2 rounded-full transition">
-            <Image
-              src="/cart.png"
-              alt="Cart Icon"
-              width={20}
-              height={20}
-              className="text-white"
-            />
-          </div>
-        </Link>
+
+        {/* Add to Cart Button */}
+        <button
+          onClick={handleAddToCart} // ✅ Call addToCart function on click
+          className="hover:bg-[#029FAE] bg-gray-200 p-2 rounded-full transition"
+        >
+          <Image
+            src="/cart.png"
+            alt="Cart Icon"
+            width={20}
+            height={20}
+            className="text-white"
+          />
+        </button>
       </div>
     </div>
   );
