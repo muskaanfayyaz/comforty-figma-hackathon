@@ -66,7 +66,6 @@ const ProductDetailPage = () => {
         price: product.price,
         image: product.image_url,
         quantity: 1,
-        name: product.title,
       });
 
       setSuccessMessage("Product successfully added to cart!");
@@ -171,3 +170,5 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
+
+//productdetailpage
