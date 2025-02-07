@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "../../context/CartContext";
 import Link from "next/link";
 import Confetti from "react-confetti";
 
 const SuccessPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
+  );
+};
+
+const SuccessContent = () => {
   const { clearCart } = useCart();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
